@@ -17,6 +17,8 @@ namespace MLM
             List<Person> persons = new List<Person>();
             // List to hold indexes of the new salesmen
             List<int> newSalesmen = new List<int>();
+            // List of time for the previous runs.
+            List<int> previousTimes = new List<int>();
             // How many hours have passed.
             int hours = 0;
             // How many sales people do we have.
@@ -33,23 +35,22 @@ namespace MLM
                 Console.WriteLine("Defaulting to 5 runs.");
                 runs = 5;
             }
-
-            // Setup persons using the grid.
-            for (int x = 0; x < grid.SizeX; x++)
-            {
-                for (int y = 0; y < grid.SizeY; y++)
-                {
-                    persons.Add(new Person(x, y));
-                }
-            }
-
-            // Initial salesman
-            persons.Insert(0, new Person(0, 0, true));
-
             
             // We'll run the simulation 5 times.
             for (int runIdx = 0; runIdx < runs; runIdx++)
             {
+
+                // Setup persons using the grid.
+                for (int x = 0; x < grid.SizeX; x++)
+                {
+                    for (int y = 0; y < grid.SizeY; y++)
+                    {
+                        persons.Add(new Person(x, y));
+                    }
+                }
+
+                // Initial salesman
+                persons.Insert(0, new Person(0, 0, true));
 
                 while (counter != persons.Count - 1 || hours == int.MaxValue / 10)
                 {
@@ -106,8 +107,23 @@ namespace MLM
                     hours++;
                 }
 
+                previousTimes.Add(hours);
                 Console.WriteLine("Run {0} completed in {1} hours!", runIdx, hours);
+                // Reset all variables for the next run.
+                hours = 0;
+                counter = 0;
+                persons.Clear();
             }
+
+            int totalSum = 0;
+            foreach (int interval in previousTimes)
+            {
+                totalSum += interval;
+            }
+
+            float averageTimePerRun = 0;
+            averageTimePerRun = totalSum / previousTimes.Count;
+            Console.WriteLine("Average time per run based on {0} runs is: {1]", runs, Convert.ToSingle(averageTimePerRun));
         }
     }
 }
